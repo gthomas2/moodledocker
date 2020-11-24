@@ -1,0 +1,35 @@
+version: '3'
+services:
+  web:
+    build: .
+    environment:
+      - WWWROOT=$WWWROOT
+      - DEBUG=$DEBUG
+    container_name: "guy-moodle"
+    ports:
+      - "8002:8002"
+    volumes:
+      - ./moodle:/var/www/moodle:cached
+      - ./sites-enabled:/etc/nginx/sites-enabled:delegated
+      - ./var/behat-dump:/var/behat-dump:delegated
+      - ./var/log/xdebug:/var/log/xdebug:delegated
+    networks:
+      - custom-net
+
+  pgdb:
+    image: postgres:11
+    container_name: "postgres11"
+    ports:
+      #Postgresql port - 54320 on host
+      - "54320:5432"
+    environment:
+      POSTGRES_USER: pguser
+      POSTGRES_DB: pguser
+      POSTGRES_PASSWORD: "pass"
+    networks:
+      - custom-net
+
+networks:
+  custom-net:
+    external:
+      name: custom-net
